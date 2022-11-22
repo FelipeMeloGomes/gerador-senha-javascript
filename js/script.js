@@ -4,6 +4,17 @@ const generatedPasswordElement = document.querySelector("#generated-password");
 
 
 
+// Novas funcionalidades
+const openCloseGeneratorBtn = document.querySelector("#open-generate-password");
+const generatePasswordContainer = document.querySelector("#generate-options");
+const lengthInput = document.querySelector("#length");
+const lettersInput = document.querySelector("#letters");
+const numbersInput = document.querySelector("#numbers");
+const symbolsInput = document.querySelector("#symbols");
+const copyPasswordButton = document.querySelector("#copy-password");
+
+
+
 // Funções
 const getLetterLowerCase = () => {
     
@@ -34,17 +45,35 @@ const generatePassword = (getLetterLowerCase, getLetterUpperCase, getNumber, get
 
     let password         = ""
 
-    const passwordLength = 10
+    // Segunda versao 
 
-    const generators     = [
-        getLetterLowerCase,
-        getLetterUpperCase,
-        getNumber,
-        getSymbol
-    ]
+    const passwordLength = +lengthInput.value;
+
+    const generators     = [];
+
+    if (numbersInput.checked) {
+        generators.push(getNumber);
+    }
+
+    if (symbolsInput.checked) {
+        generators.push(getSymbol);
+    }
 
 
-    for (i = 0; i < passwordLength; i = i + 4) {
+    if(lettersInput.checked) {
+        generators.push(getLetterLowerCase, getLetterUpperCase)
+    }
+
+
+    console.log(generators.length)
+
+
+    if(generators.length === 0) {
+        return;
+    }
+
+
+    for (i = 0; i < passwordLength; i = i + generators.length) {
 
         generators.forEach(() => {
 
@@ -65,10 +94,6 @@ const generatePassword = (getLetterLowerCase, getLetterUpperCase, getNumber, get
 
 
 
-
-
-
-
 // Eventos
 generatePasswordButton.addEventListener("click", () => {
 
@@ -79,3 +104,27 @@ generatePasswordButton.addEventListener("click", () => {
         getSymbol);
 
 });
+
+
+openCloseGeneratorBtn.addEventListener("click", () => {
+    generatePasswordContainer.classList.toggle("hide")
+})
+
+
+copyPasswordButton.addEventListener("click", (e) => {
+    e.preventDefault()
+
+    const password = generatedPasswordElement.querySelector("h4").innerHTML;
+
+    navigator.clipboard.writeText(password).then(() => {
+
+        copyPasswordButton.innerText  = "Senha copiada com Sucesso!";
+
+        setTimeout(() => {
+
+            copyPasswordButton.innerText = "Copiar";
+
+        }, 1000)
+
+    })
+})
